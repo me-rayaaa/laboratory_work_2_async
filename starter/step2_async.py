@@ -25,19 +25,16 @@ async def work(n: int) -> None:
 
 
 async def main_2a() -> None:
-    # 2а: await в цикле - всё ещё по очереди, ~10 секунд
     for n in range(1, 11):
         await work(n)
 
 
 async def main() -> None:
-    # 2б: все корутины отдаём в gather, ждут одновременно, ~1 секунда
     coroutines = [work(n) for n in range(1, 11)]
     await asyncio.gather(*coroutines)
 
 
 async def main_tasks() -> None:
-    # то же самое через create_task: задача ставится в event loop сразу при создании
     tasks = [asyncio.create_task(work(n)) for n in range(1, 11)]
     for task in tasks:
         await task

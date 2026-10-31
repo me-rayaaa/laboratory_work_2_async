@@ -28,7 +28,6 @@ import time
 
 from timer import log, print_time
 
-# (клиент, сколько секунд база отвечает на его запрос)
 CLIENTS = [
     ("alice", 0.5),
     ("bob", 5.0),
