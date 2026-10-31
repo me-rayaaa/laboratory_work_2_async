@@ -1,28 +1,21 @@
-"""Шаг 1. Синхронная программа.
-
-Задание: реализуйте функцию work(n), которая
-  1. печатает "start n"
-  2. ждёт 1 секунду (time.sleep)
-  3. печатает "done n"
-
-и функцию main(), которая вызывает work для n от 1 до 10.
-Запустите с замером времени. Сколько секунд заняла программа?
-"""
+"""Шаг 1. Синхронная версия: десять задач, каждая ждёт секунду, всё строго по очереди."""
 
 import time
 
 from timer import print_time
 
+TASKS_COUNT = 10
+
 
 def work(n: int) -> None:
-    print(f"start {n}")
+    print("start", n)
     time.sleep(1)
-    print(f"done {n}")
+    print("done", n)
 
 
 def main() -> None:
-    for n in range(1, 11):
-        work(n)
+    for number in range(1, TASKS_COUNT + 1):
+        work(number)
 
 
 if __name__ == "__main__":

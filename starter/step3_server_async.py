@@ -1,7 +1,6 @@
-"""Шаг 3б. Асинхронный сервер.
+"""Шаг 3б. Асинхронный "сервер": все клиенты принимаются сразу.
 
-То же самое, что step3_server.py, но на asyncio:
-все запросы обрабатываются конкурентно через asyncio.gather.
+Пока bob ждёт базу, event loop успевает ответить всем остальным.
 """
 
 import asyncio
@@ -18,14 +17,14 @@ CLIENTS = [
 
 
 async def handle_request(client: str, duration: float) -> None:
-    log(f"{client}: запрос принят")
-    await asyncio.sleep(duration)  # пока ждём базу, loop обслуживает других
-    log(f"{client}: ответ отправлен")
+    log(client + ": запрос принят")
+    await asyncio.sleep(duration)
+    log(client + ": ответ отправлен")
 
 
 async def main() -> None:
-    coroutines = [handle_request(client, duration) for client, duration in CLIENTS]
-    await asyncio.gather(*coroutines)
+    incoming = [handle_request(name, db_time) for name, db_time in CLIENTS]
+    await asyncio.gather(*incoming)
 
 
 if __name__ == "__main__":

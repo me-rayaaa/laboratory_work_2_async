@@ -1,43 +1,40 @@
-"""Шаг 2. Переписываем на asyncio.
+"""Шаг 2. То же самое на asyncio.
 
-Задание 2а:
-  1. Сделайте work корутиной (async def).
-  2. Замените time.sleep на await asyncio.sleep.
-  3. Сделайте main корутиной и вызовите в ней work через await в цикле.
-  4. Запустите через asyncio.run.
-
-Замерьте время. Изменилось ли оно по сравнению с шагом 1? Почему?
-
-Задание 2б:
-  Перепишите main так, чтобы все 10 задач ждали одновременно.
-  Подсказка: asyncio.gather. Что изменилось в порядке вывода?
+run_one_by_one - вариант 2а (await в цикле, ~10 с)
+main           - вариант 2б (gather, ~1 с), он и запускается
+run_with_tasks - доп. вариант через create_task (~1 с)
 """
 
 import asyncio
 
 from timer import print_time
 
+TASKS_COUNT = 10
+PAUSE = 1
+
 
 async def work(n: int) -> None:
-    print(f"start {n}")
-    await asyncio.sleep(1)
-    print(f"done {n}")
+    print("start", n)
+    await asyncio.sleep(PAUSE)  # здесь корутина отдаёт управление event loop
+    print("done", n)
 
 
-async def main_2a() -> None:
-    for n in range(1, 11):
-        await work(n)
+async def run_one_by_one() -> None:
+    for i in range(1, TASKS_COUNT + 1):
+        await work(i)
+
+
+async def run_with_tasks() -> None:
+    started = []
+    for i in range(1, TASKS_COUNT + 1):
+        started.append(asyncio.create_task(work(i)))
+    for task in started:
+        await task
 
 
 async def main() -> None:
-    coroutines = [work(n) for n in range(1, 11)]
-    await asyncio.gather(*coroutines)
-
-
-async def main_tasks() -> None:
-    tasks = [asyncio.create_task(work(n)) for n in range(1, 11)]
-    for task in tasks:
-        await task
+    jobs = [work(i) for i in range(1, TASKS_COUNT + 1)]
+    await asyncio.gather(*jobs)
 
 
 if __name__ == "__main__":
